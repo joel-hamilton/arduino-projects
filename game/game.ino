@@ -10,6 +10,7 @@ const int bluePin = 5;
 
 const int maxDifficulty = 5;
 const int winningScore = 20;
+const int resetTime = 3000;
 
 int scores[2] = {0, 0};
 int pointGiven = 0;
@@ -21,6 +22,7 @@ int color = 1;
 long startTime = 0;
 long currentTime = 0;
 long lastTime = 0;
+long buttonDownTime = 0;
 
 float difficulty = 1.0;
 
@@ -63,6 +65,24 @@ void setup() {
 void loop() {
   buttonState = digitalRead(buttonPin);
 
+  // see if button is long-pressed (we'll restart if so)
+  if (buttonState == 1) {
+    // this is original button press, set the down time
+    if (!buttonDownTime) {
+      buttonDownTime = millis();
+    } else if (millis() - buttonDownTime > resetTime) {
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Resetting...");
+      delay(3000);
+      buttonDownTime = 0;
+      buttonState = 0;
+      reset();
+    }
+  } else {
+    buttonDownTime = 0;
+  }
+
   // start the game
   if (buttonState == 1 && !hasStarted) {
     lcd.clear();
@@ -72,6 +92,7 @@ void loop() {
     color = random(0, 2);
     startTime = millis();
     lastTime = 0;
+    difficulty = 1.0;
 
     // turn off led
     analogWrite(redPin, 0);
@@ -178,15 +199,16 @@ int getInterval() {
 
 void reset() {
   lcd.clear();
-  if (scores[0] > scores[1]) {
+  if (scores[0] == winningScore) {
     lcd.print("Red wins!");
-  } else {
+    delay(5000);
+  } else if (scores[1] == winningScore) {
     lcd.print("Green wins!");
+    delay(5000);
   }
   scores[0] = 0;
   scores[1] = 0;
   hasStarted = 0;
-  delay(5000);
   lcd.clear();
 }
 
