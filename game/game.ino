@@ -9,15 +9,18 @@ const int greenPin = 6;
 const int bluePin = 5;
 
 const int maxDifficulty = 5;
+const int winningScore = 20;
 
 int scores[2] = {0, 0};
 int pointGiven = 0;
 int hasStarted = 0;
 int buttonState = 0;
-int lastTime = 0;
 int interval = 0;
 int color = 1;
-int startTime = 0;
+
+long startTime = 0;
+long currentTime = 0;
+long lastTime = 0;
 
 float difficulty = 1.0;
 
@@ -49,8 +52,6 @@ int prevB = bluVal;
 
 
 void setup() {
-  interval = getInterval();
-  color = random(0, 2);
   Serial.begin(9600);
   pinMode(buttonPin, INPUT);
   pinMode(redPin, OUTPUT);
@@ -64,16 +65,18 @@ void loop() {
 
   // start the game
   if (buttonState == 1 && !hasStarted) {
-    hasStarted = 1;
     lcd.clear();
+    // init new game variables
+    hasStarted = 1;
+    interval = getInterval();
+    color = random(0, 2);
+    startTime = millis();
+    lastTime = 0;
 
     // turn off led
     analogWrite(redPin, 0);
     analogWrite(greenPin, 0);
     analogWrite(bluePin, 0);
-
-    // init timer
-    startTime = millis();
   }
 
   // waiting for game to start, fade colours
@@ -90,7 +93,7 @@ void loop() {
   }
 
   // if we get this far, it's game on!
-  int currentTime = millis();
+  currentTime = millis();
 
   if (currentTime - startTime < 1000) {
     lcd.setCursor(0, 0);
@@ -155,7 +158,7 @@ void getNewColor() {
 }
 
 void setScores() {
-  if (scores[0] > 2 || scores[1] > 2) {
+  if (scores[0] >= winningScore || scores[1] >= winningScore) {
     reset();
     return;
   }
@@ -183,8 +186,6 @@ void reset() {
   scores[0] = 0;
   scores[1] = 0;
   hasStarted = 0;
-  lastTime = 0;
-  startTime = 0;
   delay(5000);
   lcd.clear();
 }
