@@ -4,6 +4,7 @@
 
 RTC_DS1307 rtc;
 Servo servo;
+int button = 7;
 int pos = 0;
 
 void setup() {
@@ -23,22 +24,28 @@ void setup() {
 }
 
 void loop() {
-  DateTime now = rtc.now();
-    //if (now.hour() == 15 && now.minute() == 0) {
-    if(true){
-    open();
-    delay(1000);
-    close();
-    delay(60000);
+  // tip on button press
+  if (digitalRead(button) == HIGH) {
+    feed();
   }
 
+  DateTime now = rtc.now();
+  if (now.hour() == 14 && now.minute() == 30) {
+    feed();
+    delay(60000);
+  }
+}
+
+void feed() {
+  open();
   delay(1000);
+  close();
 }
 
 void open() {
   DateTime now = rtc.now();
   for (pos = 0; pos <= 180; pos++) {
-    delay(30);
+    delay(20);
     servo.write(pos);
   }
 }
@@ -46,6 +53,6 @@ void open() {
 void close() {
   for (pos = 180; pos >= 0; pos--) {
     servo.write(pos);
-    delay(10);
+    delay(5);
   }
 }
