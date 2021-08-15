@@ -1,3 +1,3 @@
-Temp/humidity sensor, with a 7-seg display
+Temp/humidity sensor, with an LCD display
 
 ![](img.jpg)
