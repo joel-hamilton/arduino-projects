@@ -1,5 +1,5 @@
 # Arduino Projects
 
-Misc. small Arduino projects
+Miscellaneous small Arduino projects
 
 {{building|arduino|cplusplus}}
